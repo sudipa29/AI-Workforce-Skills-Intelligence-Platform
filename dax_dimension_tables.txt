@@ -1,0 +1,68 @@
+**********************************************************
+Dim_Company_Size = 
+DISTINCT(
+    SELECTCOLUMNS(
+        fact_jobs,
+        "Company_Size",
+        fact_jobs[company_size]
+    )
+)
+
+**********************************************************
+Dim_Country = 
+DISTINCT(
+    SELECTCOLUMNS(
+        fact_jobs,
+        "Country",
+        fact_jobs[country]
+    )
+)
+
+**********************************************************
+Dim_Date = 
+ADDCOLUMNS(
+CALENDAR(
+DATE(2025,1,1),
+DATE(2026,12,31)
+),
+"Year",YEAR([Date]),
+"Month",FORMAT([Date],"MMMM"),
+"MonthNo",MONTH([Date]),
+"Quarter","Q"&FORMAT([Date],"Q")
+)
+
+**********************************************************
+Dim_Experience = 
+DATATABLE(
+    "Experience_Level", STRING,
+    "Experience_Bucket", STRING,
+    "Experience_Order", INTEGER,
+    {
+        {"Entry", "0-2 Years", 1},
+        {"Mid", "3-5 Years", 2},
+        {"Senior", "6-9 Years", 3},
+        {"Lead", "10+ Years", 4}
+    }
+)
+
+**********************************************************
+Dim_Industry = 
+DISTINCT(
+    SELECTCOLUMNS(
+        fact_jobs,
+        "Industry",
+        fact_jobs[industry]
+    )
+)
+
+**********************************************************
+Dim_Remote = 
+DISTINCT(
+    SELECTCOLUMNS(
+        fact_jobs,
+        "Remote_Work",
+        fact_jobs[remote_work]
+    )
+)
+
+**********************************************************

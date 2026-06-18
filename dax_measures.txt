@@ -1,0 +1,129 @@
+Avg Demand Growth = 
+AVERAGE(fact_jobs[demand_growth_yoy_pct])
+
+**********************************************************
+
+Avg Demand Score = 
+AVERAGE(fact_jobs[demand_score])
+
+**********************************************************
+Avg Experience = 
+AVERAGE(fact_jobs[years_of_experience])
+
+**********************************************************
+Avg Salary = 
+AVERAGE(fact_jobs[annual_salary_usd])
+
+**********************************************************
+Avg Skill Demand = 
+AVERAGE(fact_skills[demand_score])
+
+**********************************************************
+Avg Skill Salary = 
+AVERAGE(fact_skills[annual_salary_usd])
+
+**********************************************************
+Dashboard Title = 
+VAR SelectedCountry =
+SELECTEDVALUE(
+    Dim_Country[Country],
+    "Global"
+)
+
+RETURN
+"AI Skills Intelligence Dashboard " &
+SelectedCountry
+
+**********************************************************
+Fact Skills Rows = 
+COUNTROWS(fact_skills)
+
+**********************************************************
+Job Count = 
+COUNTROWS(fact_jobs)
+
+**********************************************************
+Job Share % = 
+DIVIDE(
+    [Total Jobs],
+    CALCULATE([Total Jobs], ALL(Dim_Industry))
+)
+
+**********************************************************
+Last Refresh = 
+"Last Updated: " &
+FORMAT(TODAY(),"dd-MMM-yyyy")
+
+**********************************************************
+LLM Roles = 
+CALCULATE(
+    COUNT(fact_jobs[job_id]),
+    fact_jobs[is_llm_role] = 1
+)
+
+**********************************************************
+LLM Share % = 
+DIVIDE(
+    [LLM Roles],
+    [Total Jobs]
+)
+
+**********************************************************
+Max Salary = 
+MAX(fact_jobs[annual_salary_usd])
+
+**********************************************************
+Moving Avg Jobs = 
+AVERAGEX(
+    DATESINPERIOD(
+        Dim_Date[Date],
+        MAX(Dim_Date[Date]),
+        -3,
+        MONTH
+    ),
+    [Total Jobs]
+)
+
+**********************************************************
+Remote Job % = 
+DIVIDE(
+    [Remote Jobs],
+    COUNTROWS(fact_jobs)
+)
+
+**********************************************************
+Skill Count = 
+COUNTROWS(fact_skills)
+
+**********************************************************
+Skill Share % = 
+DIVIDE(
+[Skill Count],
+CALCULATE(
+[Skill Count],
+ALL(dim_skill)
+)
+)
+
+**********************************************************
+Total Countries = 
+DISTINCTCOUNT(fact_jobs[country])
+
+**********************************************************
+Top Skill Count = 
+VAR TopSkill =
+    TOPN(
+        1,
+        SUMMARIZE(
+            dim_skill,
+            dim_skill[Skill],
+            "SkillCount",
+            [Skill Count]
+        ),
+        [SkillCount],
+        DESC
+    )
+RETURN
+MAXX(TopSkill, [SkillCount])
+
+**********************************************************
